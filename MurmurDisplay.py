@@ -9,6 +9,10 @@ Notes:
 
 To Do:
 	Add white LED flash when user value changes to anything other than 0
+	
+Known Issues:
+	If switch from offline to online display, it shows "Onlinee" - clear/refresh display (attempted fix)
+	Display not lighting up red (attempted fix)
 
 Troubleshoot Values:
 	print "users.value %i" % (len(users))
@@ -88,6 +92,7 @@ while True:
 			time_m = ' min, '
 			time_s = ' sec'
 		if len(users) > 0:
+			lcd.clear()
 			lcd.set_cursor_position(0, 0)
 			lcd.write("Online Users: %i" % (len(users)))
 			backlight.rgb(125,125,175)
@@ -101,6 +106,7 @@ while True:
 			lcd.write(days + time_d + hours + time_h)
 
 		else:
+			lcd.clear()
 			lcd.set_cursor_position(0, 0)
 			lcd.write("No Online Users")
 			backlight.rgb(0,0,0)
@@ -109,6 +115,7 @@ while True:
 			  lcd.write("Server: Online")
 			else:
 			  lcd.write("Server: Offline")
+			  backlight.rgb(175,125,125)
 			lcd.set_cursor_position(0, 2)
 			lcd.write(days + time_d + hours + time_h)
 
