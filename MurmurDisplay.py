@@ -2,7 +2,7 @@
 MurmurDisplay.py - Murmur (Mumble)Server Display Script For DOT3k
 Semedar@Gmail.com - http://www.Semedar.com/
 Copyright (c) 2015, Villa, Victor D. / Semedar@Gmail.com
-Version: 1.0 Alpha
+Version: 1.1 Alpha
 
 Notes:
 	Import within loop doesn't 'import'/do it twice.
