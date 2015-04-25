@@ -7,7 +7,7 @@ Notes:
 	Import within loop doesn't 'import'/do it twice.
 
 To Do:
-	Add white LED flash when user value changes to anything other than 0
+	Add white LED flash (50% brightness) when user value changes to anything other than 0
 	
 Known Issues:
 	If switch from offline to online display, it shows "Onlinee" - clear/refresh display (attempted fix)
