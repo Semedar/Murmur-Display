@@ -1,17 +1,21 @@
 '''
 MurmurDisplay.py - Murmur (Mumble)Server Display Script For DOT3k
+Semedar@Gmail.com - http://www.Semedar.com/
 Copyright (c) 2015, Villa, Victor D. / Semedar@Gmail.com
-Version: 1.1 Alpha
+Version: 1.2 Alpha
 
 Notes:
 	Import within loop doesn't 'import'/do it twice.
 
 To Do:
-	Add white LED flash (50% brightness) when user value changes to anything other than 0
-	
+	Don't update/refresh the screen if user count didn't change
+	Add white LED flash when user value changes to anything other than 0 (done)
+	Add 'favorite' users and display changes to special color
+
 Known Issues:
-	If switch from offline to online display, it shows "Onlinee" - clear/refresh display (attempted fix)
-	Display not lighting up red (attempted fix)
+	If switch from offline to online display, it shows "Onlinee" - clear/refresh display (fixed)
+	Display not lighting up red (fixed)
+	Pi crashes/freezes after 2 days of this script running (fixed)
 
 Troubleshoot Values:
 	print "users.value %i" % (len(users))
@@ -19,7 +23,6 @@ Troubleshoot Values:
 	print "chancount.value %.1f" % (len(server.getChannels())/10)
 	print "bancount.value %i" % (len(server.getBans()))
 	print "usersnotauth.value %i" % (usersnotauth)
-
 '''
 
 #!/usr/bin/env python
@@ -31,8 +34,9 @@ iceslice='/usr/share/Ice/slice/Murmur.ice'
 iceincludepath="/usr/share/Ice/slice"
 serverport=64738
 iceport=6502
-icesecret="!!!_YOUR_ICE_PASSWORD_GOES_HERE_!!!"
+icesecret="!QAZ@WSX1qaz2wsx"
 messagesizemax="65535"
+oldUserCount='null'
 
 import Ice, sys
 Ice.loadSlice("--all -I%s %s" % (iceincludepath, iceslice))
@@ -103,7 +107,6 @@ while True:
 			  backlight.rgb(175,125,125)
 			lcd.set_cursor_position(0, 2)
 			lcd.write(days + time_d + hours + time_h)
-
 		else:
 			lcd.clear()
 			lcd.set_cursor_position(0, 0)
@@ -117,7 +120,17 @@ while True:
 			  backlight.rgb(175,125,125)
 			lcd.set_cursor_position(0, 2)
 			lcd.write(days + time_d + hours + time_h)
+	if oldUserCount != len(users):
+		if len(users) > 0:
+			backlight.set_bar(0,[148]*9)
+			time.sleep(.1)
+			backlight.set_bar(0,[0]*9)
+			time.sleep(.1)
+			backlight.set_bar(0,[148]*9)
+			time.sleep(.1)
+			backlight.set_bar(0,[0]*9)
 
+	oldUserCount=len(users)
 	ice.shutdown()
 	uptime()
-	time.sleep(10)
+	time.sleep(7)
