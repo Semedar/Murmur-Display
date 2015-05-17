@@ -34,7 +34,7 @@ iceslice='/usr/share/Ice/slice/Murmur.ice'
 iceincludepath="/usr/share/Ice/slice"
 serverport=64738
 iceport=6502
-icesecret="!QAZ@WSX1qaz2wsx"
+icesecret="!!_YOUR_ICE_PASSWORD_GOES_HERE_!!!"
 messagesizemax="65535"
 oldUserCount='null'
 
