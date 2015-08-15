@@ -1,15 +1,15 @@
 '''
-MurmurDisplay.py - Murmur (Mumble)Server Display Script For DOT3k
+MurmurDisplay.py - Murmur (Mumble) Server Display Script For DOT3k
 Semedar@Gmail.com - http://www.Semedar.com/
 Copyright (c) 2015, Villa, Victor D. / Semedar@Gmail.com
-Version: 1.2 Alpha
+Version: 1.3 Alpha
 
 Notes:
 	Import within loop doesn't 'import'/do it twice.
 
 To Do:
-	Don't update/refresh the screen if user count didn't change
-	Add white LED flash when user value changes to anything other than 0 (done)
+	Don't update/refresh the screen if user count didn't change (Done)
+	Add white LED flash when user value changes (Done)
 	Add 'favorite' users and display changes to special color
 
 Known Issues:
@@ -34,9 +34,10 @@ iceslice='/usr/share/Ice/slice/Murmur.ice'
 iceincludepath="/usr/share/Ice/slice"
 serverport=64738
 iceport=6502
-icesecret="!!_YOUR_ICE_PASSWORD_GOES_HERE_!!!"
+icesecret="!QAZ@WSX1qaz2wsx"
 messagesizemax="65535"
-oldUserCount='null'
+oldUserCount=-1
+prev_hours=''
 
 import Ice, sys
 Ice.loadSlice("--all -I%s %s" % (iceincludepath, iceslice))
@@ -83,6 +84,8 @@ while True:
 
 	# Get uptime in easy to read format
 	def uptime():
+                global oldUserCount, prev_hours
+                # find the latest uptime.
 		with open('/proc/uptime', 'r') as f:
 			uptime_seconds = float(f.readline().split()[0])
 			seconds = str(int(uptime_seconds % 60))
@@ -94,43 +97,47 @@ while True:
 			time_h = ' Hrs'
 			time_m = ' min, '
 			time_s = ' sec'
-		if len(users) > 0:
-			lcd.clear()
-			lcd.set_cursor_position(0, 0)
-			lcd.write("Online Users: %i" % (len(users)))
-			backlight.rgb(125,125,175)
-			lcd.set_cursor_position(0, 1)
-			if response == 0:
-			  lcd.write("Server: Online")
-			else:
-			  lcd.write("Server: Offline")
-			  backlight.rgb(175,125,125)
-			lcd.set_cursor_position(0, 2)
-			lcd.write(days + time_d + hours + time_h)
-		else:
-			lcd.clear()
-			lcd.set_cursor_position(0, 0)
-			lcd.write("No Online Users")
-			backlight.rgb(0,0,0)
-			lcd.set_cursor_position(0, 1)
-			if response == 0:
-			  lcd.write("Server: Online")
-			else:
-			  lcd.write("Server: Offline")
-			  backlight.rgb(175,125,125)
-			lcd.set_cursor_position(0, 2)
-			lcd.write(days + time_d + hours + time_h)
-	if oldUserCount != len(users):
-		if len(users) > 0:
-			backlight.set_bar(0,[148]*9)
-			time.sleep(.1)
-			backlight.set_bar(0,[0]*9)
-			time.sleep(.1)
-			backlight.set_bar(0,[148]*9)
-			time.sleep(.1)
-			backlight.set_bar(0,[0]*9)
-
-	oldUserCount=len(users)
-	ice.shutdown()
+		# Check if the users count has changed or hours has changed
+		if len(users) != oldUserCount or prev_hours != hours:
+                        if len(users) > 0: # If there's anyone in the server
+                                lcd.clear()
+                                lcd.set_cursor_position(0, 0)
+                                lcd.write("Online Users: %i" % (len(users)))
+                                backlight.rgb(125,125,175)
+                                lcd.set_cursor_position(0, 1)
+                                if response == 0: # If pinging Google succeeded
+                                  lcd.write("Server: Online")
+                                else: # If pinging Google failed
+                                  lcd.write("Server: Offline")
+                                  backlight.rgb(175,125,125)
+                                lcd.set_cursor_position(0, 2)
+                                lcd.write(days + time_d + hours + time_h)
+                        else: # If there's no one in the server
+                                lcd.clear()
+                                lcd.set_cursor_position(0, 0)
+                                lcd.write("No Online Users")
+                                backlight.rgb(0,0,0)
+                                lcd.set_cursor_position(0, 1)
+                                if response == 0: # If pinging Google succeeded
+                                  lcd.write("Server: Online")
+                                else: # If pinging Google failed
+                                  lcd.write("Server: Offline")
+                                  backlight.rgb(175,125,125)
+                                lcd.set_cursor_position(0, 2)
+                                lcd.write(days + time_d + hours + time_h)
+                        # Detect if user count has changed if changed flash the LED
+                        if oldUserCount != len(users):
+                                backlight.set_bar(0,[148]*9)
+                                time.sleep(.1)
+                                backlight.set_bar(0,[0]*9)
+                                time.sleep(.1)
+                                backlight.set_bar(0,[148]*9)
+                                time.sleep(.1)
+                                backlight.set_bar(0,[0]*9)
+                        # Update current user count and current hours 
+                        oldUserCount = len(users) 
+                        prev_hours = hours
+	# call uptime to see if we need any update
 	uptime()
+	#sleep for some time before getting the user count again.
 	time.sleep(7)
