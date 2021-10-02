@@ -1,4 +1,4 @@
-# Semedar's GitHub Repo
+# Murmur Display
 Requirements:
 --------------
 0. **Pimoroni Master DOT3k files:** *https://github.com/pimoroni/dot3k/*
